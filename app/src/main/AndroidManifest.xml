@@ -27,6 +27,8 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".GeofenceTransitionsIntentService" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -45,7 +47,15 @@
         s
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" />
+            android:label="@string/title_activity_maps">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".CreateMarkerActivity" />
+
+        </activity>
+
+
         <activity android:name=".CreateMarkerActivity"></activity>
     </application>
 

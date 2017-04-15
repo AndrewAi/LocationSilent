@@ -13,6 +13,8 @@ public class CreateMarkerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_marker);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Create Location");
 
 
@@ -24,5 +26,10 @@ public class CreateMarkerActivity extends AppCompatActivity {
                 startActivity(launchMapActivity);
             }
         });
+
     }
+
+
+
+
 }
