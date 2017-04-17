@@ -1,10 +1,12 @@
 package westport.andrewirwin.com.locationsilent;
 
+
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
@@ -13,13 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by AndrewIrwin on 15/04/2017.
+ * Created by AndrewIrwin on 18/01/16.
  */
-
 public class GeofenceTransitionsIntentService extends IntentService {
 
-
-    protected static final String TAG = "GeofenceTransitionsIS";
+    protected static final String TAG = "GeofenceTransitionIS";
 
 
 
@@ -45,6 +45,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
      */
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        Log.i(TAG,"onHandleIntent:");
 
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()){
@@ -72,6 +74,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
             );
 
 
+            //// TODO: 17/04/2017 Geofence Triggered, Action Point: Put Phone on silent here
+            Toast.makeText(getApplicationContext(),"GeoFence Triggered",Toast.LENGTH_SHORT).show();
 
 
 
@@ -112,10 +116,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
         return  geofenceTransitionString + ": "  + triggeringGeofencesIdsString;
     }
 
-    /**
-     * Posts a notification in the notification bar when a transition is detected.
-     * If the user clicks the notification, control goes to the MainActivity.
-     */
+
+
 
 
 
@@ -139,7 +141,4 @@ public class GeofenceTransitionsIntentService extends IntentService {
         }
 
     }
-
-
-
 }
