@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
@@ -11,6 +12,8 @@ import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.widget.Toast.*;
 
 /**
  * Created by AndrewIrwin on 15/04/2017.
@@ -39,7 +42,9 @@ public class GeofenceTrasitionService extends IntentService {
         int geoFenceTransition = geofencingEvent.getGeofenceTransition();
         // Check if the transition type is of interest
         if ( geoFenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ) {
+                geoFenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT ||
+                geoFenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
+            Toast.makeText(getApplicationContext(),"Geofence Triggered",LENGTH_SHORT).show();
             // Get the geofence that were triggered
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 

@@ -46,12 +46,13 @@ import static westport.andrewirwin.com.locationsilent.R.id.map;
 public class MapsActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         GoogleMap.OnMapClickListener,
+        LocationListener,
         GoogleMap.OnMarkerClickListener,
         GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks, ResultCallback<Status> {
 
 
-    private static final String TAG = MapsActivity.class.getSimpleName();
+    private static final String TAG = "IrwinGeo";
 
 
     private GoogleMap mMap;
@@ -64,7 +65,7 @@ public class MapsActivity extends AppCompatActivity
     private Location lastLocation;
 
 
-  //  SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+    //  SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
     //SharedPreferences.Editor editor = preferences.edit();
 
 
@@ -167,11 +168,11 @@ public class MapsActivity extends AppCompatActivity
             @Override
             public void onMapClick(LatLng latLng) {
 
-                mMap.clear();
-               // mMap.addMarker(new MarkerOptions().position(latLng));
+                //mMap.clear();
+                // mMap.addMarker(new MarkerOptions().position(latLng));
                 Log.i("MapMarker", "Latlng: " + latLng);
                 LatLng selectedLocation = latLng;
-              //  editor.putFloat("lat", (float) selectedLocation.latitude);
+                //  editor.putFloat("lat", (float) selectedLocation.latitude);
                 //editor.putFloat("lon", (float) selectedLocation.longitude);
 
                 markerForGeofence(latLng);
@@ -215,6 +216,7 @@ public class MapsActivity extends AppCompatActivity
     public void onConnected(Bundle connectionHint) {
         Log.i(TAG, "Connected to GoogleApiClient");
         getLastKnownLocation();
+        recoverGeofenceMarker();
 
     }
 
@@ -244,7 +246,7 @@ public class MapsActivity extends AppCompatActivity
         // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
         // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
         // is already inside that geofence.
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL);
 
         // Add the geofences to be monitored by geofencing service.
         builder.addGeofences(mGeofenceList);
@@ -265,6 +267,7 @@ public class MapsActivity extends AppCompatActivity
         }
 
         try {
+            Log.i(TAG,"AddingGeofences");
             LocationServices.GeofencingApi.addGeofences(
                     mGoogleApiClient,
                     // The GeofenceRequest object.
@@ -286,11 +289,14 @@ public class MapsActivity extends AppCompatActivity
      * previously registered geofences.
      */
     public void removeGeofencesButtonHandler(View view) {
+
         if (!mGoogleApiClient.isConnected()) {
             Toast.makeText(this, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
             return;
         }
         try {
+
+            Log.i(TAG,"Removing Geofences");
             // Remove geofences.
             LocationServices.GeofencingApi.removeGeofences(
                     mGoogleApiClient,
@@ -405,66 +411,43 @@ public class MapsActivity extends AppCompatActivity
     // Get last known location
     private void getLastKnownLocation() {
         Log.d(TAG, "getLastKnownLocation()");
-        // if ( checkPermission() ) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+        if ( checkPermission() ) {
+            lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if ( lastLocation != null ) {
+                Log.i(TAG, "LasKnown location. " +
+                        "Long: " + lastLocation.getLongitude() +
+                        " | Lat: " + lastLocation.getLatitude());
+                writeLastLocation();
+                startLocationUpdates();
+            } else {
+                Log.w(TAG, "No location retrieved yet");
+                startLocationUpdates();
+            }
         }
-        lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (lastLocation != null) {
-            Log.i(TAG, "LasKnown location. " +
-                    "Long: " + lastLocation.getLongitude() +
-                    " | Lat: " + lastLocation.getLatitude());
-            //writeLastLocation();
-            startLocationUpdates();
-        } else {
-            Log.w(TAG, "No location retrieved yet");
-            startLocationUpdates();
-        }
+        else askPermission();
     }
-    //else askPermission();
-//}
 
 
     private LocationRequest locationRequest;
     // Defined in mili seconds.
     // This number in extremely low, and should be used only for debug
-    private final int UPDATE_INTERVAL = 1000;
-    private final int FASTEST_INTERVAL = 900;
+    private final int UPDATE_INTERVAL = 10000;
+    private final int FASTEST_INTERVAL = 9000;
 
     // Start location Updates
-    private void startLocationUpdates() {
+    private void startLocationUpdates(){
         Log.i(TAG, "startLocationUpdates()");
         locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(UPDATE_INTERVAL)
                 .setFastestInterval(FASTEST_INTERVAL);
 
-         if ( checkPermission() )
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, (LocationListener) this);
+        if ( checkPermission() )
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
     }
 
-
-
-
     public void onLocationChanged(Location location) {
-        Log.d(TAG, "onLocationChanged ["+location+"]");
+        Log.d(TAG, "onLocationChanged [" + location + "]");
         lastLocation = location;
         //writeActualLocation(location);
     }
@@ -484,7 +467,6 @@ public class MapsActivity extends AppCompatActivity
     private void writeLastLocation() {
         writeActualLocation(lastLocation);
     }
-
 
 
     private Marker locationMarker;
@@ -519,7 +501,7 @@ public class MapsActivity extends AppCompatActivity
         // Define marker options
         MarkerOptions markerOptions = new MarkerOptions()
                 .position(latLng)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
                 .title(title);
         if (mMap != null) {
             // Remove last geoFenceMarker
@@ -544,7 +526,6 @@ public class MapsActivity extends AppCompatActivity
     }
 
 
-
     private static final long GEO_DURATION = 60 * 60 * 1000;
     private static final String GEOFENCE_REQ_ID = "My Geofence";
     private static final float GEOFENCE_RADIUS = 500.0f; // in meters
@@ -557,7 +538,7 @@ public class MapsActivity extends AppCompatActivity
                 .setCircularRegion(latLng.latitude, latLng.longitude, radius)
                 .setExpirationDuration(GEO_DURATION)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER
-                        | Geofence.GEOFENCE_TRANSITION_EXIT)
+                        | Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
                 .build();
     }
 
@@ -573,15 +554,16 @@ public class MapsActivity extends AppCompatActivity
 
 
     private PendingIntent geoFencePendingIntent;
+    private final int GEOFENCE_REQ_CODE = 0;
 
     private PendingIntent createGeofencePendingIntent() {
         Log.d(TAG, "createGeofencePendingIntent");
         if (geoFencePendingIntent != null)
             return geoFencePendingIntent;
 
-        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
+        Intent intent = new Intent(this, GeofenceTrasitionService.class);
         return PendingIntent.getService(
-                this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                this, GEOFENCE_REQ_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
 
@@ -605,7 +587,7 @@ public class MapsActivity extends AppCompatActivity
             drawGeofence();
         } else {
             // inform about fail
-            Log.e("GEOFENCE: " , "Geofence Drawing failed");
+            Log.e("GEOFENCE: ", "Geofence Drawing failed");
         }
     }
 
@@ -632,11 +614,11 @@ public class MapsActivity extends AppCompatActivity
     // Saving GeoFence marker with prefs mng
     private void saveGeofence() {
         Log.d(TAG, "saveGeofence()");
-        SharedPreferences sharedPref = getPreferences( Context.MODE_PRIVATE );
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
-        editor.putLong( KEY_GEOFENCE_LAT, Double.doubleToRawLongBits( geoFenceMarker.getPosition().latitude ));
-        editor.putLong( KEY_GEOFENCE_LON, Double.doubleToRawLongBits( geoFenceMarker.getPosition().longitude ));
+        editor.putLong(KEY_GEOFENCE_LAT, Double.doubleToRawLongBits(geoFenceMarker.getPosition().latitude));
+        editor.putLong(KEY_GEOFENCE_LON, Double.doubleToRawLongBits(geoFenceMarker.getPosition().longitude));
         editor.apply();
     }
 
@@ -644,12 +626,12 @@ public class MapsActivity extends AppCompatActivity
     // Recovering last Geofence marker
     private void recoverGeofenceMarker() {
         Log.d(TAG, "recoverGeofenceMarker");
-        SharedPreferences sharedPref = getPreferences( Context.MODE_PRIVATE );
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
 
-        if ( sharedPref.contains( KEY_GEOFENCE_LAT ) && sharedPref.contains( KEY_GEOFENCE_LON )) {
-            double lat = Double.longBitsToDouble( sharedPref.getLong( KEY_GEOFENCE_LAT, -1 ));
-            double lon = Double.longBitsToDouble( sharedPref.getLong( KEY_GEOFENCE_LON, -1 ));
-            LatLng latLng = new LatLng( lat, lon );
+        if (sharedPref.contains(KEY_GEOFENCE_LAT) && sharedPref.contains(KEY_GEOFENCE_LON)) {
+            double lat = Double.longBitsToDouble(sharedPref.getLong(KEY_GEOFENCE_LAT, -1));
+            double lon = Double.longBitsToDouble(sharedPref.getLong(KEY_GEOFENCE_LON, -1));
+            LatLng latLng = new LatLng(lat, lon);
             markerForGeofence(latLng);
             drawGeofence();
         }
@@ -665,7 +647,7 @@ public class MapsActivity extends AppCompatActivity
         ).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(@NonNull Status status) {
-                if ( status.isSuccess() ) {
+                if (status.isSuccess()) {
                     // remove drawing
                     removeGeofenceDraw();
                 }
@@ -675,9 +657,9 @@ public class MapsActivity extends AppCompatActivity
 
     private void removeGeofenceDraw() {
         Log.d(TAG, "removeGeofenceDraw()");
-        if ( geoFenceMarker != null)
+        if (geoFenceMarker != null)
             geoFenceMarker.remove();
-        if ( geoFenceLimits != null )
+        if (geoFenceLimits != null)
             geoFenceLimits.remove();
     }
 
@@ -700,10 +682,7 @@ public class MapsActivity extends AppCompatActivity
     */
 
 
-
     // GEOFENCE ABOVE ^^
-
-
 
 
     // Add the created GeofenceRequest to the device's monitoring list
@@ -729,15 +708,14 @@ public class MapsActivity extends AppCompatActivity
     */
 
 
-
-
     private final int REQ_PERMISSION = 999;
+
     // Check for permission to access Location
     private boolean checkPermission() {
         Log.d(TAG, "checkPermission()");
         // Ask for permission if it wasn't granted yet
         return (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED );
+                == PackageManager.PERMISSION_GRANTED);
     }
 
 
@@ -746,7 +724,7 @@ public class MapsActivity extends AppCompatActivity
         Log.d(TAG, "askPermission()");
         ActivityCompat.requestPermissions(
                 this,
-                new String[] { android.Manifest.permission.ACCESS_FINE_LOCATION },
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                 REQ_PERMISSION
         );
     }
@@ -757,10 +735,10 @@ public class MapsActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.d(TAG, "onRequestPermissionsResult()");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch ( requestCode ) {
+        switch (requestCode) {
             case REQ_PERMISSION: {
-                if ( grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED ){
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission granted
                     getLastKnownLocation();
 
@@ -778,58 +756,6 @@ public class MapsActivity extends AppCompatActivity
         Log.w(TAG, "permissionsDenied()");
         // TODO close app and warn user
     }
-
-
-
-    /*
-    // Check for permission to access Location
-    private boolean checkPermission() {
-        Log.d(TAG, "checkPermission()");
-        // Ask for permission if it wasn't granted yet
-        return (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED );
-    }
-
-
-    // Asks for permission
-    private void askPermission() {
-        Log.d(TAG, "askPermission()");
-        ActivityCompat.requestPermissions(
-                this,
-                new String[] { Manifest.permission.ACCESS_FINE_LOCATION },
-                REQ_PERMISSION
-        );
-    }
-
-
-    // Verify user's response of the permission requested
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult()");
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch ( requestCode ) {
-            case REQ_PERMISSION: {
-                if ( grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED ){
-                    // Permission granted
-                    getLastKnownLocation();
-
-                } else {
-                    // Permission denied
-                    permissionsDenied();
-                }
-                break;
-            }
-        }
-    }
-
-
-    // App cannot work without the permissions
-    private void permissionsDenied() {
-        Log.w(TAG, "permissionsDenied()");
-    }
-    */
-
 
 
 }
