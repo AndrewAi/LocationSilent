@@ -135,11 +135,22 @@ public class MapsActivity extends AppCompatActivity
                 SharedPreferences.Editor editor = preferences.edit();
 
 
-                Log.i(TAG,"onMapClick: lat= " + selectedLocation.latitude);
-                editor.putLong("lat", Double.doubleToLongBits(selectedLocation.latitude));
 
-                Log.i(TAG,"onMapClick: lon= " + selectedLocation.longitude);
-                editor.putLong("lon", Double.doubleToLongBits(selectedLocation.longitude));
+                Log.i(TAG,"onMapClick: lat= " + selectedLocation.latitude);
+                //String latString = String.valueOf(selectedLocation.latitude);
+                editor.putFloat("lat1", (float) selectedLocation.latitude);
+                //editor.putString("lat1",  latString);
+                //Log.i(TAG,"onMapClick: latString= " + latString);
+
+
+                Log.i(TAG,"onMapClick: lonString= " + selectedLocation.longitude);
+                //String lonString = String.valueOf(selectedLocation.longitude);
+                editor.putFloat("lon1",(float) selectedLocation.longitude);
+
+                //editor.putString("lon1", lonString);
+
+                editor.putString("testS", "stringabc");
+                editor.apply();
 
 
             }

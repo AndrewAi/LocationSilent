@@ -205,24 +205,31 @@ public class CreateMarkerActivity extends AppCompatActivity
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
 
-        //double lat = Double.longBitsToDouble(preferences.getLong("lat", 0));
-        double lat = 53.76134408349329;
-        Log.i(TAG,"addGeofencesButtonHandler: lat= " + lat);
+        double doubleLat = preferences.getFloat("lat1", 0);
 
-        //double lon = Double.longBitsToDouble(preferences.getLong("lon", 0));
-        double lon = -9.522189348936081;
-        Log.i(TAG, "addGeofencesButtonHandler: lon= " + lon);
+        String test1 = preferences.getString("testS", "FAIL");
+        Log.i(TAG,"addGeofencesButtonHandler: String= " + test1);
+
+        //double doubleLat = 53.76134408349329;
+        //Double doubleLat = Double.parseDouble(preferences.getString("lat1", null));
+        Log.i(TAG,"addGeofencesButtonHandler: lat= " + doubleLat);
+
+        double doubleLon = preferences.getFloat("lon1", 0);
+        //double doubleLon = -9.522189348936081;
+
+        //Double doubleLon = Double.parseDouble(preferences.getString("lon1", null));
+        Log.i(TAG, "addGeofencesButtonHandler: lon= " + doubleLon);
 
 
-        if (lat != 0 || lon != 0) {
-            Constants.BAY_AREA_LANDMARKS.put("TEST", new LatLng(lat, lon));
+        if (doubleLat != 0 || doubleLon != 0) {
+            Constants.BAY_AREA_LANDMARKS.put("TEST1", new LatLng(doubleLat, doubleLon));
 
-            Log.i(TAG, "addGeofencesButtonHandler: Gefence Added Success! lat= " + lat + "lon= " + lon);
+            Log.i(TAG, "addGeofencesButtonHandler: Gefence Added Success! lat= " + doubleLat + " lon= " + doubleLon);
             Toast.makeText(getApplicationContext(), "Gefence Added Success", Toast.LENGTH_LONG).show();
 
         } else {
-            Log.e(TAG,"addGeofencesButtonHandler: Gefence Error lat= " + lat + "lon= " + lon);
-            Toast.makeText(getApplicationContext(),"Gefence Error",Toast.LENGTH_LONG).show();
+            Log.e(TAG,"addGeofencesButtonHandler: Gefence Error lat= " + doubleLat + "lon= " + doubleLon);
+            Toast.makeText(getApplicationContext(),"Gefence Error1",Toast.LENGTH_LONG).show();
         }
 
         try {
