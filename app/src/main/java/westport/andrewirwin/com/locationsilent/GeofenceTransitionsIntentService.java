@@ -2,8 +2,12 @@ package westport.andrewirwin.com.locationsilent;
 
 
 import android.app.IntentService;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -11,7 +15,9 @@ import android.widget.Toast;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -77,6 +83,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
             //// TODO: 17/04/2017 Geofence Triggered, Action Point: Put Phone on silent here
             Toast.makeText(getApplicationContext(),"GeoFence Triggered",Toast.LENGTH_SHORT).show();
 
+            headsUpSmsNotifaction(geofenceTransitionDetails);
+
 
 
 
@@ -118,6 +126,49 @@ public class GeofenceTransitionsIntentService extends IntentService {
 
 
 
+    private void headsUpSmsNotifaction(String notificationDetails){
+
+        // Create an explicit content Intent that starts the main Activity.
+
+
+
+
+
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat mdfromat = new SimpleDateFormat("hh:ss | dd/ MM / yyyy");
+        String strDate = mdfromat.format(calendar.getTime());
+
+
+
+        // Get a notification builder that's compatible with platform versions >= 4
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+
+        // Define the notification settings.
+        builder.setSmallIcon(R.mipmap.ic_launcher)
+                // In a real app, you may want to use a library like Volley
+                // to decode the Bitmap.
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                        R.mipmap.ic_launcher))
+                .setColor(Color.RED)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setVibrate(new long[]{10,10,10})
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setContentTitle(notificationDetails)
+                .setContentText(strDate);
+
+
+
+
+        // Dismiss notification once the user touches it.
+        //builder.setAutoCancel(true);
+
+        // Get an instance of the Notification manager
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Issue the notification
+        mNotificationManager.notify(0, builder.build());
+    }
 
 
 
