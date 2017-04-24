@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -67,8 +68,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
         // Test that the reported transisition was of interest.
-        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
 
             // Get the geofences that were triggered. A single event can trigger multiple geofences.
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
@@ -84,7 +84,14 @@ public class GeofenceTransitionsIntentService extends IntentService {
             //// TODO: 17/04/2017 Geofence Triggered, Action Point: Put Phone on silent here
             Toast.makeText(getApplicationContext(),"GeoFence Triggered",Toast.LENGTH_SHORT).show();
 
-            headsUpSmsNotifaction(geofenceTransitionDetails);
+            //headsUpSmsNotifaction(geofenceTransitionDetails);
+            //setRingerSilent();
+
+            NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE);
+            }
 
 
 
@@ -94,7 +101,40 @@ public class GeofenceTransitionsIntentService extends IntentService {
 
 
             Log.i(TAG, geofenceTransitionDetails);
-        } else{
+        }
+
+        else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT){
+
+            // Get the geofences that were triggered. A single event can trigger multiple geofences.
+            List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
+
+            // Get the transistion details as a String.
+            String geofenceTransitionDetails = getGeofenceTransitionDetails(
+                    this,
+                    geofenceTransition,
+                    triggeringGeofences
+            );
+
+
+            //// TODO: 17/04/2017 Geofence Triggered, Action Point: Put Phone on silent here
+            Toast.makeText(getApplicationContext(),"GeoFence Triggered",Toast.LENGTH_SHORT).show();
+
+            //headsUpSmsNotifaction(geofenceTransitionDetails);
+            //setRingerNormal();
+
+            NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE);
+            }
+
+
+
+        }
+
+
+
+        else{
             // Log the error
             Log.e(TAG, getString(R.string.geofence_transition_invalid_type, geofenceTransition));
 

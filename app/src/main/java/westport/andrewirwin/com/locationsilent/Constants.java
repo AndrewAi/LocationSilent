@@ -46,7 +46,7 @@ public class Constants {
     static {
 
         // GooglePlex.
-        BAY_AREA_LANDMARKS.put("M50 TOLL", new LatLng(53.279005,-9.008917));
+        BAY_AREA_LANDMARKS.put("Work", new LatLng(53.279005,-9.008917));
     }
 
     // Galway Lat 53.279005 long -9.008917
