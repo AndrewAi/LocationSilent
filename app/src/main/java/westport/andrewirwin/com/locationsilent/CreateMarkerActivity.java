@@ -30,12 +30,14 @@ public class CreateMarkerActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Create Location");
 
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = preferences.edit();
+
 
         //--- text view---
-        geoFenceNameTextView = (TextView) findViewById(R.id.GeoFenceNameTV);
+        geoFenceNameTextView = (TextView) findViewById(R.id.GeoFenceNameET);
 
-
-
+        geoFenceNameTextView.setText(preferences.getString("GeofenceNameET","Name"));
 
 
 
@@ -45,6 +47,11 @@ public class CreateMarkerActivity extends AppCompatActivity {
         openMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("GeofenceNameET", geoFenceNameTextView.getText().toString());
+
+
                 Intent launchMapActivity = new Intent(CreateMarkerActivity.this, MapsActivity.class);
                 startActivity(launchMapActivity);
             }
@@ -64,6 +71,9 @@ public class CreateMarkerActivity extends AppCompatActivity {
     public void saveButton (View view){
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = preferences.edit();
+
+
 
         double doubleLat = preferences.getFloat("lat1", 0);
         Log.i(TAG,"addGeofencesButtonHandler: lat= " + doubleLat);
@@ -82,6 +92,8 @@ public class CreateMarkerActivity extends AppCompatActivity {
 
             Log.i(TAG, "addGeofencesButtonHandler: Gefence Added Success! lat= " + doubleLat + " lon= " + doubleLon);
             Toast.makeText(getApplicationContext(), "Gefence Added Success", Toast.LENGTH_LONG).show();
+
+            editor.putString("GeofenceNameET", "Name");
 
         } else {
             Log.e(TAG,"addGeofencesButtonHandler: Gefence Error lat= " + doubleLat + "lon= " + doubleLon);

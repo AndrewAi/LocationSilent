@@ -11,12 +11,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -29,12 +30,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status>
-        {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status> {
 
     private static final String TAG = "MainActivity";
 
@@ -63,13 +65,18 @@ public class MainActivity extends AppCompatActivity
     private Button mRemoveGeofencesButton;
 
 
+    private ListView listView;
+    String[] ListElements = new String[]{"GMIT","Work","Home"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+
+        //getSupportActionBar().setTitle("Saved Locations");
 
 
         // Get the UI widgets.
@@ -98,12 +105,6 @@ public class MainActivity extends AppCompatActivity
         buildGoogleApiClient();
 
 
-
-
-
-
-
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,6 +115,30 @@ public class MainActivity extends AppCompatActivity
         });
 
         askPermission();
+
+
+        listView = (ListView) findViewById(R.id.savedGeofenceListView);
+
+       // ListElements = new String[]{"Test1", "Test2"};
+       // ListElements =
+       // String[] ListElements;
+
+
+        //for (Map.Entry<String, LatLng> entry : Constants.BAY_AREA_LANDMARKS.entrySet()) {
+
+          //  Log.i(TAG, "populateGeofenceList: Building Geofence");
+
+            //savedGeofenceList.add(entry.getKey());
+
+        //}
+
+
+
+
+        final List<String> ListElementsArrayList = new ArrayList<String>(Arrays.asList(ListElements));
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,ListElementsArrayList);
+
+        listView.setAdapter(adapter);
 
     }
 
@@ -186,7 +211,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     /**
      * Builds and returns a GeofencingRequest. Specifies the list of geofences to be monitored.
      * Also specifies how the geofence notifications are initially triggered.
@@ -230,7 +254,6 @@ public class MainActivity extends AppCompatActivity
         }
 
 
-
     }
 
 
@@ -267,7 +290,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Runs when the result of calling addGeofences() and removeGeofences() becomes available.
      * Either method can complete successfully or with an error.
-     *
+     * <p>
      * Since this activity implements the {@link ResultCallback} interface, we are required to
      * define this method.
      *
@@ -303,7 +326,6 @@ public class MainActivity extends AppCompatActivity
             Log.e(TAG, errorMessage);
         }
     }
-
 
 
     /**
@@ -363,26 +385,20 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-            /**
-             * Ensures that only one button is enabled at any time. The Add Geofences button is enabled
-             * if the user hasn't yet added geofences. The Remove Geofences button is enabled if the
-             * user has added geofences.
-             */
-            private void setButtonsEnabledState() {
-                if (mGeofencesAdded) {
-                    mAddGeofencesButton.setEnabled(false);
-                    mRemoveGeofencesButton.setEnabled(true);
-                } else {
-                    mAddGeofencesButton.setEnabled(true);
-                    mRemoveGeofencesButton.setEnabled(false);
-                }
-            }
-
-
-
-
-
+    /**
+     * Ensures that only one button is enabled at any time. The Add Geofences button is enabled
+     * if the user hasn't yet added geofences. The Remove Geofences button is enabled if the
+     * user has added geofences.
+     */
+    private void setButtonsEnabledState() {
+        if (mGeofencesAdded) {
+            mAddGeofencesButton.setEnabled(false);
+            mRemoveGeofencesButton.setEnabled(true);
+        } else {
+            mAddGeofencesButton.setEnabled(true);
+            mRemoveGeofencesButton.setEnabled(false);
+        }
+    }
 
 
     // Request Permissions Below
@@ -438,9 +454,6 @@ public class MainActivity extends AppCompatActivity
 
 
     // Request Permissions Above ^^
-
-
-
 
 
 }

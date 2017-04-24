@@ -4,18 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="westport.andrewirwin.com.locationsilent.CreateMarkerActivity">
+    tools:context="westport.andrewirwin.com.locationsilent.CreateMarkerActivity"
+    tools:layout_editor_absoluteY="81dp"
+    tools:layout_editor_absoluteX="0dp">
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/GeoFenceNameET"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name"
-        app:layout_constraintLeft_toLeftOf="@+id/guideline"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="515dp" />
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="35dp"
+        app:layout_constraintLeft_toLeftOf="parent" />
 
     <android.support.constraint.Guideline
         android:layout_width="wrap_content"
@@ -40,39 +44,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add Location in Maps"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.037"
-        android:layout_marginTop="23dp"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
-
-    <TextView
-        android:id="@+id/GeoFenceNameTV"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:text="TextView"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="@+id/guideline"
-        app:layout_constraintHorizontal_bias="0.0"
-        android:layout_marginTop="23dp"
-        app:layout_constraintTop_toBottomOf="@+id/openMapBtn" />
+        tools:layout_constraintTop_creator="1"
+        android:layout_marginTop="36dp"
+        app:layout_constraintTop_toBottomOf="@+id/GeoFenceNameET" />
 
     <Button
         android:id="@+id/saveBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
         android:onClick="saveButton"
         android:text="Save"
+        android:layout_marginEnd="16dp"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.973"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="18dp" />
 
 </android.support.constraint.ConstraintLayout>
