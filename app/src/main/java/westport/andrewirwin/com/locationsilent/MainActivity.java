@@ -66,7 +66,10 @@ public class MainActivity extends AppCompatActivity
 
 
     private ListView listView;
-    String[] ListElements = new String[]{"GMIT","Work","Home"};
+    //String[] ListElements;
+    String[] str = new String[5];
+
+
 
 
     @Override
@@ -124,18 +127,35 @@ public class MainActivity extends AppCompatActivity
        // String[] ListElements;
 
 
-        //for (Map.Entry<String, LatLng> entry : Constants.BAY_AREA_LANDMARKS.entrySet()) {
+        for (int i = 0; i < str.length; i++){
 
-          //  Log.i(TAG, "populateGeofenceList: Building Geofence");
+            str[i] = "";
+         }
 
-            //savedGeofenceList.add(entry.getKey());
+        int i = 0;
+        for (String entry : Constants.BAY_AREA_LANDMARKS.keySet()) {
 
-        //}
+            Log.i(TAG, "populateGeofenceList: Building Geofence");
+
+            str[i] = entry.toLowerCase();
+            Log.i(TAG, "onCreate: str= " + str[i]);
+            i++;
+
+        }
+        i = 0;
+
+        //for (int i = 0; i < str.length; i++){
+            //Log.i(TAG,"onCreate: List Item:" + mylist.get(i));
+        //    str[i] = Constants.BAY_AREA_LANDMARKS.get(i)
+       // }
 
 
+        //TODO Try using below to fill out list view
+       // for(Long value: mapp.keySet()){
+         //   System.out.println(mapp.get(value));
+       // }
 
-
-        final List<String> ListElementsArrayList = new ArrayList<String>(Arrays.asList(ListElements));
+        final List<String> ListElementsArrayList = new ArrayList<String>(Arrays.asList(str));
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,ListElementsArrayList);
 
         listView.setAdapter(adapter);
