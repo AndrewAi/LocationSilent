@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -15,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class CreateMarkerActivity extends AppCompatActivity {
 
     private static final String TAG = "CreateMarkerActivity";
-
+    private TextView geoFenceNameTextView;
 
 
 
@@ -30,8 +31,8 @@ public class CreateMarkerActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Create Location");
 
 
-
-
+        //--- text view---
+        geoFenceNameTextView = (TextView) findViewById(R.id.GeoFenceNameTV);
 
 
 
@@ -71,9 +72,13 @@ public class CreateMarkerActivity extends AppCompatActivity {
         double doubleLon = preferences.getFloat("lon1", 0);
         Log.i(TAG, "addGeofencesButtonHandler: lon= " + doubleLon);
 
+        String GeoFenceName = geoFenceNameTextView.getText().toString();
+        Log.i(TAG, "addGeofencesButtonHandler: GeoFenceName= " + GeoFenceName);
+
+
 
         if (doubleLat != 0 || doubleLon != 0) {
-            Constants.BAY_AREA_LANDMARKS.put("TEST2", new LatLng(doubleLat, doubleLon));
+            Constants.BAY_AREA_LANDMARKS.put(GeoFenceName, new LatLng(doubleLat, doubleLon));
 
             Log.i(TAG, "addGeofencesButtonHandler: Gefence Added Success! lat= " + doubleLat + " lon= " + doubleLon);
             Toast.makeText(getApplicationContext(), "Gefence Added Success", Toast.LENGTH_LONG).show();

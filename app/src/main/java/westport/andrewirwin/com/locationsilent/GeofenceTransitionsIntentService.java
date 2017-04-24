@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -84,6 +85,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
             Toast.makeText(getApplicationContext(),"GeoFence Triggered",Toast.LENGTH_SHORT).show();
 
             headsUpSmsNotifaction(geofenceTransitionDetails);
+
+
 
 
 
@@ -168,6 +171,20 @@ public class GeofenceTransitionsIntentService extends IntentService {
 
         // Issue the notification
         mNotificationManager.notify(0, builder.build());
+    }
+
+
+
+
+    public void setRingerNormal() {
+        AudioManager audioManager = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+    }
+
+    public void setRingerSilent() {
+        AudioManager audioManager = (AudioManager) getBaseContext().getSystemService(Context.AUDIO_SERVICE); // instantiate new AudioManager object and get the current context
+        audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+
     }
 
 
