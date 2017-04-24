@@ -1,11 +1,15 @@
 package westport.andrewirwin.com.locationsilent;
 
+import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -118,6 +122,23 @@ public class MainActivity extends AppCompatActivity
         });
 
         askPermission();
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
+
+                Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+                startActivity(intent);
+
+            }
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !mNotificationManager.isNotificationPolicyAccessGranted()) {
+
+            Toast.makeText(getApplicationContext(),"Silence Feature Available Android 6.0+",Toast.LENGTH_LONG).show();
+
+        }
 
 
         listView = (ListView) findViewById(R.id.savedGeofenceListView);

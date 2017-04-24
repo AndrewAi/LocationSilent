@@ -97,7 +97,7 @@ public class CreateMarkerActivity extends AppCompatActivity {
 
         } else {
             Log.e(TAG,"addGeofencesButtonHandler: Gefence Error lat= " + doubleLat + "lon= " + doubleLon);
-            Toast.makeText(getApplicationContext(),"Gefence Error1",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Gefence Error",Toast.LENGTH_LONG).show();
         }
 
 
