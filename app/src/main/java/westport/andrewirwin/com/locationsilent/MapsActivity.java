@@ -110,7 +110,9 @@ public class MapsActivity extends AppCompatActivity
 
         // Add a marker in Sydney and move the camera
         //final LatLng myHouse = new LatLng(53.761463, -9.522199);
-        final LatLng myHouse = new LatLng(53.272346, -9.006178);
+        // Gmit Library 53.277878, -9.010367
+        //final LatLng myHouse = new LatLng(53.272346, -9.006178);
+        final LatLng myHouse = new LatLng(53.277878, -9.010367);
         mMap.addMarker(new MarkerOptions().position(myHouse).title("Test Marker"));
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(myHouse));
 

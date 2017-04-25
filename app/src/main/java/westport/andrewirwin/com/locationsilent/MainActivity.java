@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity
 
 
     private ListView listView;
+    private ArrayAdapter<String> adapter;
     //String[] ListElements;
     String[] str = new String[5];
 
@@ -154,7 +156,7 @@ public class MainActivity extends AppCompatActivity
          }
 
         int i = 0;
-        for (String entry : Constants.BAY_AREA_LANDMARKS.keySet()) {
+        for (String entry : Constants.locations.keySet()) {
 
             Log.i(TAG, "populateGeofenceList: Building Geofence");
 
@@ -177,9 +179,34 @@ public class MainActivity extends AppCompatActivity
        // }
 
         final List<String> ListElementsArrayList = new ArrayList<String>(Arrays.asList(str));
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,ListElementsArrayList);
+        adapter = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,ListElementsArrayList);
 
         listView.setAdapter(adapter);
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            public boolean onItemLongClick(AdapterView<?> arg0, View v,
+                                           int index, long arg3) {
+                // TODO Auto-generated method stub
+                //Log.d("in onLongClick");
+                //String str=listView.getItemAtPosition(index).toString();
+
+                Log.i(TAG,"onCreate: onClickItem Position =" + index );
+                String keytoDelete=listView.getItemAtPosition(index).toString();
+                Log.i(TAG,"onCreate: Key =" + keytoDelete );
+                Constants.locations.remove(keytoDelete);
+
+                adapter.remove(keytoDelete);
+                adapter.notifyDataSetChanged();
+
+
+
+
+                //Log.d("long click : " +str);
+                return true;
+            }
+        });
+
 
     }
 
@@ -295,6 +322,8 @@ public class MainActivity extends AppCompatActivity
         }
 
 
+
+
     }
 
 
@@ -320,6 +349,13 @@ public class MainActivity extends AppCompatActivity
             logSecurityException(securityException);
         }
     }
+
+
+
+
+
+
+
 
 
     private void logSecurityException(SecurityException securityException) {
@@ -393,7 +429,7 @@ public class MainActivity extends AppCompatActivity
      * the user's location.
      */
     public void populateGeofenceList() {
-        for (Map.Entry<String, LatLng> entry : Constants.BAY_AREA_LANDMARKS.entrySet()) {
+        for (Map.Entry<String, LatLng> entry : Constants.locations.entrySet()) {
 
             Log.i(TAG, "populateGeofenceList: Building Geofence");
             mGeofenceList.add(new Geofence.Builder()

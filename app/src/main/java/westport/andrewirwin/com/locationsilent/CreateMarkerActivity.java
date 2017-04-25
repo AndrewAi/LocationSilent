@@ -88,7 +88,7 @@ public class CreateMarkerActivity extends AppCompatActivity {
 
 
         if (doubleLat != 0 || doubleLon != 0) {
-            Constants.BAY_AREA_LANDMARKS.put(GeoFenceName, new LatLng(doubleLat, doubleLon));
+            Constants.locations.put(GeoFenceName, new LatLng(doubleLat, doubleLon));
 
             Log.i(TAG, "addGeofencesButtonHandler: Gefence Added Success! lat= " + doubleLat + " lon= " + doubleLon);
             Toast.makeText(getApplicationContext(), "Gefence Added Success", Toast.LENGTH_LONG).show();

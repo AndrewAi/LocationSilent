@@ -42,11 +42,11 @@ public class Constants {
      * Map for storing information about airports in the San Francisco bay area.
      */
 
-    public static final HashMap<String, LatLng> BAY_AREA_LANDMARKS = new HashMap<>();
+    public static final HashMap<String, LatLng>  locations = new HashMap<>();
     static {
 
         // GooglePlex.
-        BAY_AREA_LANDMARKS.put("Work", new LatLng(53.279005,-9.008917));
+        //BAY_AREA_LANDMARKS.put("Work", new LatLng(53.279005,-9.008917));
     }
 
     // Galway Lat 53.279005 long -9.008917
