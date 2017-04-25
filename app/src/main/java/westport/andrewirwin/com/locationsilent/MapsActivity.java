@@ -1,13 +1,16 @@
 package westport.andrewirwin.com.locationsilent;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -38,8 +41,12 @@ public class MapsActivity extends AppCompatActivity
     private static final String TAG = "MapsActivty";
 
 
-
     private GoogleMap mMap;
+    private double lastLon;
+    private double lastLat;
+    private LatLng lastLocation;
+
+
 
     /**
      * Used to persist application state about whether geofences were added.
@@ -54,7 +61,6 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
 
 
         super.onCreate(savedInstanceState);
@@ -77,9 +83,8 @@ public class MapsActivity extends AppCompatActivity
         // Kick off the request to build GoogleApiClient.
         buildGoogleApiClient();
 
-
-
     }
+
 
 
     /**
@@ -112,92 +117,79 @@ public class MapsActivity extends AppCompatActivity
         //final LatLng myHouse = new LatLng(53.761463, -9.522199);
         // Gmit Library 53.277878, -9.010367
         //final LatLng myHouse = new LatLng(53.272346, -9.006178);
-        final LatLng myHouse = new LatLng(53.277878, -9.010367);
-        mMap.addMarker(new MarkerOptions().position(myHouse).title("Test Marker"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(myHouse));
 
-        float zoom = 14f;
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(myHouse, zoom);
-        mMap.animateCamera(cameraUpdate);
-
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-
-                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(latLng));
-                Log.i("MapMarker", "Latlng: " + latLng);
-                LatLng selectedLocation = latLng;
+        try {
 
 
+            LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (location != null) {
+                lastLon = location.getLongitude();
+                lastLat = location.getLatitude();
 
-
-                //editor.putFloat("lat", (float) selectedLocation.latitude);
-                //editor.putFloat("lon", (float) selectedLocation.longitude);
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SharedPreferences.Editor editor = preferences.edit();
-
-
-
-                Log.i(TAG,"onMapClick: lat= " + selectedLocation.latitude);
-                //String latString = String.valueOf(selectedLocation.latitude);
-                editor.putFloat("lat1", (float) selectedLocation.latitude);
-                //editor.putString("lat1",  latString);
-                //Log.i(TAG,"onMapClick: latString= " + latString);
-
-
-                Log.i(TAG,"onMapClick: lonString= " + selectedLocation.longitude);
-                //String lonString = String.valueOf(selectedLocation.longitude);
-                editor.putFloat("lon1",(float) selectedLocation.longitude);
-
-                //editor.putString("lon1", lonString);
-
-                editor.putString("testS", "stringabc");
-                editor.apply();
+                lastLocation = new LatLng(lastLat,lastLon);
 
 
             }
-        });
+            else {
+                lastLocation = new LatLng(53.277878, -9.010367);
+            }
 
-    }
+        }
+        catch (SecurityException e){
+            Toast.makeText(getApplicationContext(),"Please Allow Location Access",Toast.LENGTH_LONG).show();
+
+        }
 
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        Log.d(TAG, "onMarkerClickListener: " + marker.getPosition());
-        return false;
-    }
+
+            mMap.addMarker(new MarkerOptions().position(lastLocation).title("Current Location"));
+            //mMap.moveCamera(CameraUpdateFactory.newLatLng(myHouse));
+
+            float zoom = 14f;
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(lastLocation, zoom);
+            mMap.animateCamera(cameraUpdate);
+
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+
+                    mMap.clear();
+                    mMap.addMarker(new MarkerOptions().position(latLng));
+                    Log.i("MapMarker", "Latlng: " + latLng);
+                    LatLng selectedLocation = latLng;
 
 
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
+                    //editor.putFloat("lat", (float) selectedLocation.latitude);
+                    //editor.putFloat("lon", (float) selectedLocation.longitude);
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    SharedPreferences.Editor editor = preferences.edit();
 
-    }
 
-    @Override
-    public void onConnectionSuspended(int i) {
+                    Log.i(TAG, "onMapClick: lat= " + selectedLocation.latitude);
+                    //String latString = String.valueOf(selectedLocation.latitude);
+                    editor.putFloat("lat1", (float) selectedLocation.latitude);
+                    //editor.putString("lat1",  latString);
+                    //Log.i(TAG,"onMapClick: latString= " + latString);
 
-    }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                    Log.i(TAG, "onMapClick: lonString= " + selectedLocation.longitude);
+                    //String lonString = String.valueOf(selectedLocation.longitude);
+                    editor.putFloat("lon1", (float) selectedLocation.longitude);
 
-    }
+                    //editor.putString("lon1", lonString);
 
-    @Override
-    public void onResult(@NonNull Status status) {
+                    editor.putString("testS", "stringabc");
+                    editor.apply();
 
-    }
 
-    @Override
-    public void onLocationChanged(Location location) {
+                }
+            });
 
-    }
+        }
 
-    @Override
-    public void onMapClick(LatLng latLng) {
 
-    }
+
 
 
     /*
@@ -247,4 +239,39 @@ public class MapsActivity extends AppCompatActivity
 */
 
 
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onResult(@NonNull Status status) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
+    }
 }
